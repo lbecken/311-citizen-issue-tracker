@@ -1,0 +1,111 @@
+<mat-card class="form-card">
+  <mat-card-header>
+    <mat-card-title>Report a Municipal Issue</mat-card-title>
+    <mat-card-subtitle>Help us keep the city clean and safe</mat-card-subtitle>
+  </mat-card-header>
+  
+  <mat-card-content>
+    <form [formGroup]="issueForm" (ngSubmit)="onSubmit()">
+      <!-- Title Field -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Issue Title</mat-label>
+        <input matInput formControlName="title" placeholder="e.g., Large pothole on Main St">
+        <mat-hint align="end">{{ f['title'].value?.length || 0 }}/200</mat-hint>
+        <mat-error *ngIf="f['title'].hasError('required') && f['title'].touched">
+          Title is required
+        </mat-error>
+        <mat-error *ngIf="f['title'].hasError('maxlength')">
+          Title must be under 200 characters
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Description Field -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Description</mat-label>
+        <textarea matInput formControlName="description" rows="4" 
+                  placeholder="Provide details about the issue..."></textarea>
+        <mat-hint align="end">{{ f['description'].value?.length || 0 }}/2000</mat-hint>
+        <mat-error *ngIf="f['description'].hasError('maxlength')">
+          Description is too long
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Category Dropdown -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Category</mat-label>
+        <mat-select formControlName="category">
+          <mat-option *ngFor="let cat of categories" [value]="cat.value">
+            {{ cat.label }}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="f['category'].hasError('required') && f['category'].touched">
+          Please select a category
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Location Fields (for now, manual input) -->
+      <div class="location-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Latitude</mat-label>
+          <input matInput type="number" formControlName="latitude" 
+                 placeholder="e.g., 40.7128">
+          <mat-error *ngIf="f['latitude'].hasError('required') && f['latitude'].touched">
+            Latitude is required
+          </mat-error>
+          <mat-error *ngIf="f['latitude'].hasError('min') || f['latitude'].hasError('max')">
+            Must be between -90 and 90
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Longitude</mat-label>
+          <input matInput type="number" formControlName="longitude" 
+                 placeholder="e.g., -74.0060">
+          <mat-error *ngIf="f['longitude'].hasError('required') && f['longitude'].touched">
+            Longitude is required
+          </mat-error>
+          <mat-error *ngIf="f['longitude'].hasError('min') || f['longitude'].hasError('max')">
+            Must be between -180 and 180
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Address Field (optional, can be auto-filled later) -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Address (optional)</mat-label>
+        <input matInput formControlName="address" 
+               placeholder="Auto-filled from coordinates">
+      </mat-form-field>
+
+      <!-- Reporter Info -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Your Name</mat-label>
+        <input matInput formControlName="reportedBy" placeholder="John Doe">
+        <mat-error *ngIf="f['reportedBy'].hasError('required') && f['reportedBy'].touched">
+          Your name is required
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Your Email</mat-label>
+        <input matInput type="email" formControlName="reporterEmail" 
+               placeholder="john.doe@example.com">
+        <mat-error *ngIf="f['reporterEmail'].hasError('required') && f['reporterEmail'].touched">
+          Email is required
+        </mat-error>
+        <mat-error *ngIf="f['reporterEmail'].hasError('email')">
+          Invalid email format
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Form Actions -->
+      <div class="button-row">
+        <button mat-raised-button color="primary" type="submit" 
+                [disabled]="issueForm.invalid">
+          Submit Issue
+        </button>
+        <button mat-button type="button" (click)="onReset()">Clear Form</button>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>

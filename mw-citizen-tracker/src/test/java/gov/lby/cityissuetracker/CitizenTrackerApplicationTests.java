@@ -1,10 +1,10 @@
-package gov.lby.mw_citizen_tracker;
+package gov.lby.cityissuetracker;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class MwCitizenTrackerApplicationTests {
+class CitizenTrackerApplicationTests {
 
 	@Test
 	void contextLoads() {

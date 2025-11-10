@@ -1,0 +1,123 @@
+<mat-card class="list-card">
+  <mat-card-header>
+    <mat-card-title>Reported Issues</mat-card-title>
+    <mat-card-subtitle>View and manage citizen reports</mat-card-subtitle>
+  </mat-card-header>
+
+  <mat-card-content>
+    <!-- Filters -->
+    <div class="filter-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Filter by Status</mat-label>
+        <mat-select [(ngModel)]="statusFilter">
+          <mat-option value="">All Statuses</mat-option>
+          <mat-option *ngFor="let status of statuses" [value]="status">
+            {{ status }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Filter by Category</mat-label>
+        <mat-select [(ngModel)]="categoryFilter">
+          <mat-option value="">All Categories</mat-option>
+          <mat-option *ngFor="let cat of categories" [value]="cat">
+            {{ getCategoryEmoji(cat) }} {{ cat }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <button mat-raised-button color="primary" (click)="applyFilters()">
+        Apply Filters
+      </button>
+      <button mat-button (click)="clearFilters()">Clear</button>
+    </div>
+
+    <!-- Issues Table -->
+    <div class="table-container">
+      <table mat-table [dataSource]="issues" class="mat-elevation-z8">
+        
+        <!-- ID Column -->
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef> ID </th>
+          <td mat-cell *matCellDef="let issue"> {{ issue.id | slice:0:8 }}... </td>
+        </ng-container>
+
+        <!-- Title Column -->
+        <ng-container matColumnDef="title">
+          <th mat-header-cell *matHeaderCellDef> Title </th>
+          <td mat-cell *matCellDef="let issue"> {{ issue.title }} </td>
+        </ng-container>
+
+        <!-- Category Column -->
+        <ng-container matColumnDef="category">
+          <th mat-header-cell *matHeaderCellDef> Category </th>
+          <td mat-cell *matCellDef="let issue">
+            <span>{{ getCategoryEmoji(issue.category) }} {{ issue.category }}</span>
+          </td>
+        </ng-container>
+
+        <!-- Status Column -->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef> Status </th>
+          <td mat-cell *matCellDef="let issue">
+            <mat-chip [color]="getStatusColor(issue.status)" selected>
+              {{ issue.status }}
+            </mat-chip>
+          </td>
+        </ng-container>
+
+        <!-- Priority Column -->
+        <ng-container matColumnDef="priority">
+          <th mat-header-cell *matHeaderCellDef> Priority </th>
+          <td mat-cell *matCellDef="let issue">
+            <mat-icon *ngFor="let i of [1,2,3,4,5]" [color]="i <= issue.priority ? 'warn' : 'disabled'">
+              {{ i <= issue.priority ? 'star' : 'star_border' }}
+            </mat-icon>
+          </td>
+        </ng-container>
+
+        <!-- Reported By Column -->
+        <ng-container matColumnDef="reportedBy">
+          <th mat-header-cell *matHeaderCellDef> Reported By </th>
+          <td mat-cell *matCellDef="let issue"> {{ issue.reportedBy }} </td>
+        </ng-container>
+
+        <!-- Created At Column -->
+        <ng-container matColumnDef="createdAt">
+          <th mat-header-cell *matHeaderCellDef> Reported Date </th>
+          <td mat-cell *matCellDef="let issue"> {{ formatDate(issue.createdAt) }} </td>
+        </ng-container>
+
+        <!-- Actions Column -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef> Actions </th>
+          <td mat-cell *matCellDef="let issue">
+            <button mat-icon-button [routerLink]="['/issues', issue.id]" 
+                    matTooltip="View Details">
+              <mat-icon>visibility</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <!-- Header and Row Definitions -->
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    </div>
+
+    <!-- Loading message -->
+    <div *ngIf="issues.length === 0" class="no-data">
+      <p>No issues found.</p>
+    </div>
+
+    <!-- Paginator -->
+    <mat-paginator [length]="totalElements"
+                   [pageSize]="pageSize"
+                   [pageIndex]="currentPage"
+                   [pageSizeOptions]="[10, 20, 50]"
+                   (page)="onPageChange($event)"
+                   aria-label="Select page">
+    </mat-paginator>
+  </mat-card-content>
+</mat-card>

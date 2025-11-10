@@ -1,0 +1,45 @@
+.list-card {
+  max-width: 1200px;
+  margin: 20px auto;
+  padding: 20px;
+}
+
+.filter-row {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.filter-row mat-form-field {
+  flex: 1;
+  min-width: 200px;
+}
+
+.table-container {
+  overflow-x: auto; /* Enable horizontal scroll on small screens */
+  margin-bottom: 20px;
+}
+
+table {
+  width: 100%;
+}
+
+/* Style for status chips */
+mat-chip {
+  font-weight: 500;
+}
+
+/* Priority stars */
+mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.no-data {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+}
