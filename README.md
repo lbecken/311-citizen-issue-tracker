@@ -1,3 +1,3 @@
-# 311-citizen-issue-tracker
+# 311-city-issue-tracker
 
 A simple 311-system
