@@ -2,6 +2,7 @@ package gov.lby.cityissuetracker.service;
 
 import gov.lby.cityissuetracker.dto.CreateIssueRequest;
 import gov.lby.cityissuetracker.dto.IssueResponse;
+import gov.lby.cityissuetracker.entity.Department;
 import gov.lby.cityissuetracker.entity.Issue;
 import gov.lby.cityissuetracker.entity.IssueStatus;
 import gov.lby.cityissuetracker.entity.IssueCategory;
@@ -36,12 +37,20 @@ public class IssueService {
     private final IssueRepository issueRepository;
     private final ApplicationEventPublisher eventPublisher;
     private final IssueKafkaProducer kafkaProducer;
+    private final DepartmentRoutingService departmentRoutingService;
     private final GeometryFactory geometryFactory = new GeometryFactory(); // For creating Point objects
     
     public IssueResponse createIssue(CreateIssueRequest request) {
         // Convert DTO to Entity
         Point location = geometryFactory.createPoint(new Coordinate(request.getLongitude(), request.getLatitude()));
-        
+
+        // Route issue to appropriate department using AI
+        Department department = departmentRoutingService.routeIssue(
+                request.getTitle(),
+                request.getDescription(),
+                request.getCategory()
+        );
+
         Issue issue = Issue.builder()
             .title(request.getTitle())
             .description(request.getDescription())
@@ -52,8 +61,9 @@ public class IssueService {
             .address(request.getAddress())
             .reportedBy(request.getReportedBy())
             .reporterEmail(request.getReporterEmail())
+            .department(department)
             .build();
-        
+
         Issue saved = issueRepository.save(issue);
 
         // Publish Spring application event - RabbitMQ message will be sent after transaction commits
@@ -129,9 +139,7 @@ public class IssueService {
             .reporterEmail(issue.getReporterEmail())
             .createdAt(issue.getCreatedAt())
             .updatedAt(issue.getUpdatedAt())
-            // TODO: Uncomment when Department entity is created
-            // .departmentName(issue.getDepartment() != null ? issue.getDepartment().getName() : null)
-            .departmentName(null)
+            .departmentName(issue.getDepartment() != null ? issue.getDepartment().getName() : null)
             .workerId(issue.getWorkerId())
             .build();
     }

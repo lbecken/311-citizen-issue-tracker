@@ -57,4 +57,7 @@ public interface IssueRepository extends JpaRepository<Issue, UUID> {
     long countByCategory(IssueCategory category);
 
     long countByPriority(Integer priority);
+
+    // Find issues by multiple statuses (for resolution time prediction)
+    List<Issue> findByStatusIn(List<IssueStatus> statuses);
 }

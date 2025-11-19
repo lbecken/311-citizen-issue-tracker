@@ -83,10 +83,12 @@ public class Issue {
     @Column(nullable = false)
     private LocalDateTime updatedAt = LocalDateTime.now();
 
-    // TODO: Uncomment when Department entity is created
-    // @ManyToOne(fetch = FetchType.LAZY)
-    // @JoinColumn(name = "department_id") // Foreign key column in 'issues' table
-    // private Department department;
+    @Column(name = "resolved_at")
+    private LocalDateTime resolvedAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "department_id")
+    private Department department;
 
     @Column(name = "worker_id")
     private String workerId;
