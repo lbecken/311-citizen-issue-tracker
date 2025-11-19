@@ -8,12 +8,15 @@ import gov.lby.cityissuetracker.entity.IssueCategory;
 import gov.lby.cityissuetracker.repository.IssueRepository;
 import gov.lby.cityissuetracker.exception.IssueNotFoundException;
 
+import gov.lby.cityissuetracker.event.IssueCreatedApplicationEvent;
+
 import lombok.RequiredArgsConstructor;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -28,8 +31,9 @@ import java.util.UUID;
 @RequiredArgsConstructor // Lombok: auto-creates constructor for final fields
 @Transactional // All methods run in a transaction (auto-rollback on exceptions)
 public class IssueService {
-    
+
     private final IssueRepository issueRepository;
+    private final ApplicationEventPublisher eventPublisher;
     private final GeometryFactory geometryFactory = new GeometryFactory(); // For creating Point objects
     
     public IssueResponse createIssue(CreateIssueRequest request) {
@@ -40,6 +44,8 @@ public class IssueService {
             .title(request.getTitle())
             .description(request.getDescription())
             .category(IssueCategory.valueOf(request.getCategory()))
+            .status(IssueStatus.REPORTED)
+            .priority(3) // Default priority
             .location(location)
             .address(request.getAddress())
             .reportedBy(request.getReportedBy())
@@ -47,7 +53,10 @@ public class IssueService {
             .build();
         
         Issue saved = issueRepository.save(issue);
-        
+
+        // Publish Spring application event - RabbitMQ message will be sent after transaction commits
+        eventPublisher.publishEvent(new IssueCreatedApplicationEvent(this, saved.getId()));
+
         // Convert Entity to DTO
         return toResponse(saved);
     }

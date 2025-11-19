@@ -12,5 +12,19 @@ services:
       - ./postgres_data:/var/lib/postgresql/data
       - ./db/init:/docker-entrypoint-initdb.d
     #restart: unless-stopped
-#volumes:
-#  postgres_data:
+
+  rabbitmq:
+    image: rabbitmq:4.0-management
+    container_name: city-issue-tracker-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: rabbitmq_pass_123
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    #restart: unless-stopped
+
+volumes:
+  rabbitmq_data:
