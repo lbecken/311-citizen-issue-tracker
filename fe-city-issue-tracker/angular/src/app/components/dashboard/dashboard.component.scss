@@ -1,0 +1,265 @@
+.dashboard-container {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.connection-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 20px;
+  background: #ffebee;
+  color: #c62828;
+  width: fit-content;
+  margin-bottom: 24px;
+  font-size: 14px;
+
+  &.connected {
+    background: #e8f5e9;
+    color: #2e7d32;
+  }
+
+  &.connecting {
+    background: #fff3e0;
+    color: #ef6c00;
+
+    mat-icon {
+      animation: spin 1s linear infinite;
+    }
+  }
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 16px;
+  color: #666;
+}
+
+.summary-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.summary-card {
+  mat-card-content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px !important;
+  }
+
+  .card-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.08);
+
+    mat-icon {
+      font-size: 24px;
+      width: 24px;
+      height: 24px;
+    }
+  }
+
+  .card-info {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .card-value {
+    font-size: 28px;
+    font-weight: 600;
+    line-height: 1.2;
+  }
+
+  .card-label {
+    font-size: 14px;
+    color: #666;
+  }
+
+  &.total {
+    .card-icon {
+      background: rgba(33, 150, 243, 0.15);
+      color: #2196f3;
+    }
+    .card-value {
+      color: #2196f3;
+    }
+  }
+
+  &.open {
+    .card-icon {
+      background: rgba(255, 152, 0, 0.15);
+      color: #ff9800;
+    }
+    .card-value {
+      color: #ff9800;
+    }
+  }
+
+  &.resolved {
+    .card-icon {
+      background: rgba(76, 175, 80, 0.15);
+      color: #4caf50;
+    }
+    .card-value {
+      color: #4caf50;
+    }
+  }
+
+  &.closed {
+    .card-icon {
+      background: rgba(117, 117, 117, 0.15);
+      color: #757575;
+    }
+    .card-value {
+      color: #757575;
+    }
+  }
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stats-card {
+  mat-card-header {
+    padding: 16px 16px 0;
+  }
+
+  mat-card-title {
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  mat-card-content {
+    padding: 16px;
+  }
+}
+
+.stat-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.stat-bar {
+  .stat-label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 4px;
+    font-size: 13px;
+
+    .stat-count {
+      font-weight: 600;
+    }
+  }
+
+  .bar-container {
+    height: 8px;
+    background: #e0e0e0;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.3s ease;
+    min-width: 2px;
+  }
+}
+
+.events-card {
+  .no-events {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px;
+    color: #999;
+    gap: 8px;
+
+    mat-icon {
+      font-size: 32px;
+      width: 32px;
+      height: 32px;
+    }
+  }
+
+  .events-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+
+  .event-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 0;
+
+    mat-chip {
+      font-size: 12px;
+      min-height: 24px;
+      color: white;
+    }
+
+    .event-time {
+      font-size: 12px;
+      color: #666;
+    }
+  }
+}
+
+.last-updated {
+  text-align: center;
+  font-size: 12px;
+  color: #999;
+  margin-top: 16px;
+}
+
+// Responsive adjustments
+@media (max-width: 600px) {
+  .dashboard-container {
+    padding: 16px;
+  }
+
+  .summary-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+}

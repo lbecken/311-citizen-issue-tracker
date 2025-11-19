@@ -1,0 +1,156 @@
+<div class="dashboard-container">
+  <!-- Connection Status -->
+  <div class="connection-status" [class.connected]="connectionStatus === 'connected'" [class.connecting]="connectionStatus === 'connecting'">
+    <mat-icon>{{ connectionStatus === 'connected' ? 'wifi' : connectionStatus === 'connecting' ? 'sync' : 'wifi_off' }}</mat-icon>
+    <span>{{ connectionStatus === 'connected' ? 'Live' : connectionStatus === 'connecting' ? 'Connecting...' : 'Disconnected' }}</span>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="!metrics" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Loading dashboard metrics...</p>
+  </div>
+
+  <!-- Dashboard Content -->
+  <div *ngIf="metrics" class="dashboard-content">
+    <!-- Summary Cards -->
+    <div class="summary-cards">
+      <mat-card class="summary-card total">
+        <mat-card-content>
+          <div class="card-icon">
+            <mat-icon>assignment</mat-icon>
+          </div>
+          <div class="card-info">
+            <span class="card-value">{{ metrics.totalIssues }}</span>
+            <span class="card-label">Total Issues</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="summary-card open">
+        <mat-card-content>
+          <div class="card-icon">
+            <mat-icon>pending_actions</mat-icon>
+          </div>
+          <div class="card-info">
+            <span class="card-value">{{ metrics.openIssues }}</span>
+            <span class="card-label">Open Issues</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="summary-card resolved">
+        <mat-card-content>
+          <div class="card-icon">
+            <mat-icon>check_circle</mat-icon>
+          </div>
+          <div class="card-info">
+            <span class="card-value">{{ metrics.resolvedIssues }}</span>
+            <span class="card-label">Resolved</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="summary-card closed">
+        <mat-card-content>
+          <div class="card-icon">
+            <mat-icon>archive</mat-icon>
+          </div>
+          <div class="card-info">
+            <span class="card-value">{{ metrics.closedIssues }}</span>
+            <span class="card-label">Closed</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Detailed Stats -->
+    <div class="stats-grid">
+      <!-- Issues by Status -->
+      <mat-card class="stats-card">
+        <mat-card-header>
+          <mat-card-title>Issues by Status</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="stat-bars">
+            <div *ngFor="let item of getSortedStatuses()" class="stat-bar">
+              <div class="stat-label">
+                <span>{{ statusLabels[item[0]] }}</span>
+                <span class="stat-count">{{ item[1] }}</span>
+              </div>
+              <div class="bar-container">
+                <div class="bar-fill" [style.width.%]="getPercentage(item[1], metrics.totalIssues)" [style.background-color]="getStatusColor(item[0])"></div>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Issues by Category -->
+      <mat-card class="stats-card">
+        <mat-card-header>
+          <mat-card-title>Issues by Category</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="stat-bars">
+            <div *ngFor="let item of getSortedCategories()" class="stat-bar">
+              <div class="stat-label">
+                <span>{{ categoryLabels[item[0]] }}</span>
+                <span class="stat-count">{{ item[1] }}</span>
+              </div>
+              <div class="bar-container">
+                <div class="bar-fill" [style.width.%]="getPercentage(item[1], metrics.totalIssues)" [style.background-color]="getCategoryColor(item[0])"></div>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Issues by Priority -->
+      <mat-card class="stats-card">
+        <mat-card-header>
+          <mat-card-title>Issues by Priority</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="stat-bars">
+            <div *ngFor="let item of getSortedPriorities()" class="stat-bar">
+              <div class="stat-label">
+                <span>{{ priorityLabels[item[0]] }}</span>
+                <span class="stat-count">{{ item[1] }}</span>
+              </div>
+              <div class="bar-container">
+                <div class="bar-fill" [style.width.%]="getPercentage(item[1], metrics.totalIssues)" [style.background-color]="getPriorityColor(item[0])"></div>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Recent Events -->
+      <mat-card class="stats-card events-card">
+        <mat-card-header>
+          <mat-card-title>Recent Activity</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div *ngIf="recentEvents.length === 0" class="no-events">
+            <mat-icon>hourglass_empty</mat-icon>
+            <span>Waiting for events...</span>
+          </div>
+          <div class="events-list">
+            <div *ngFor="let event of recentEvents" class="event-item">
+              <mat-chip [style.background-color]="getStatusColor(event.status)">
+                {{ formatEventType(event.eventType) }}
+              </mat-chip>
+              <span class="event-time">{{ formatTime(event.timestamp) }}</span>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Last Updated -->
+    <div class="last-updated">
+      Last updated: {{ metrics.timestamp | date:'medium' }}
+    </div>
+  </div>
+</div>

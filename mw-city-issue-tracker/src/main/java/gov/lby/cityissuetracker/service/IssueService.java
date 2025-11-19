@@ -9,6 +9,7 @@ import gov.lby.cityissuetracker.repository.IssueRepository;
 import gov.lby.cityissuetracker.exception.IssueNotFoundException;
 
 import gov.lby.cityissuetracker.event.IssueCreatedApplicationEvent;
+import gov.lby.cityissuetracker.kafka.IssueKafkaProducer;
 
 import lombok.RequiredArgsConstructor;
 
@@ -34,6 +35,7 @@ public class IssueService {
 
     private final IssueRepository issueRepository;
     private final ApplicationEventPublisher eventPublisher;
+    private final IssueKafkaProducer kafkaProducer;
     private final GeometryFactory geometryFactory = new GeometryFactory(); // For creating Point objects
     
     public IssueResponse createIssue(CreateIssueRequest request) {
@@ -56,6 +58,14 @@ public class IssueService {
 
         // Publish Spring application event - RabbitMQ message will be sent after transaction commits
         eventPublisher.publishEvent(new IssueCreatedApplicationEvent(this, saved.getId()));
+
+        // Publish Kafka event for real-time dashboard
+        kafkaProducer.sendIssueCreated(
+                saved.getId(),
+                saved.getStatus(),
+                saved.getCategory(),
+                saved.getPriority()
+        );
 
         // Convert Entity to DTO
         return toResponse(saved);
@@ -85,10 +95,22 @@ public class IssueService {
     public IssueResponse updateStatus(UUID id, IssueStatus newStatus, String notes) {
         Issue issue = issueRepository.findById(id)
             .orElseThrow(() -> new IssueNotFoundException("Issue not found: " + id));
-        
+
+        IssueStatus previousStatus = issue.getStatus();
         issue.setStatus(newStatus);
         // In real app, you might save notes to a separate audit table
-        return toResponse(issueRepository.save(issue));
+        Issue saved = issueRepository.save(issue);
+
+        // Publish Kafka event for status change
+        kafkaProducer.sendStatusChange(
+                saved.getId(),
+                previousStatus,
+                newStatus,
+                saved.getCategory(),
+                saved.getPriority()
+        );
+
+        return toResponse(saved);
     }
     
     // Helper method to convert Entity → DTO

@@ -34,13 +34,16 @@ import { MatIconModule } from '@angular/material/icon';
   template: `
     <mat-toolbar color="primary">
       <span>CityTracker 311</span>
-      
+
       <nav class="nav-links">
         <a mat-button routerLink="/report" routerLinkActive="active">
           <mat-icon>add_circle</mat-icon> Report Issue
         </a>
         <a mat-button routerLink="/issues" routerLinkActive="active">
           <mat-icon>list</mat-icon> View Issues
+        </a>
+        <a mat-button routerLink="/dashboard" routerLinkActive="active">
+          <mat-icon>dashboard</mat-icon> Dashboard
         </a>
       </nav>
     </mat-toolbar>
