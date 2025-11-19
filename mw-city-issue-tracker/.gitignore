@@ -7,6 +7,9 @@ target/
 ### lLocal Configuration ###
 .env
 
+### lLocal image uploads ###
+uploads/
+
 ### STS ###
 .apt_generated
 .classpath
