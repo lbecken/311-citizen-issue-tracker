@@ -50,4 +50,11 @@ public interface IssueRepository extends JpaRepository<Issue, UUID> {
             @Param("cutoffDate") LocalDateTime cutoffDate,
             @Param("excludeId") UUID excludeId
     );
+
+    // Count methods for dashboard metrics
+    long countByStatus(IssueStatus status);
+
+    long countByCategory(IssueCategory category);
+
+    long countByPriority(Integer priority);
 }
