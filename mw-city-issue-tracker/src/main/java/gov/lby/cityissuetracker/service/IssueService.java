@@ -8,6 +8,8 @@ import gov.lby.cityissuetracker.entity.IssueCategory;
 import gov.lby.cityissuetracker.repository.IssueRepository;
 import gov.lby.cityissuetracker.exception.IssueNotFoundException;
 
+import gov.lby.cityissuetracker.messaging.IssueMessagePublisher;
+
 import lombok.RequiredArgsConstructor;
 
 import org.locationtech.jts.geom.Coordinate;
@@ -28,8 +30,9 @@ import java.util.UUID;
 @RequiredArgsConstructor // Lombok: auto-creates constructor for final fields
 @Transactional // All methods run in a transaction (auto-rollback on exceptions)
 public class IssueService {
-    
+
     private final IssueRepository issueRepository;
+    private final IssueMessagePublisher messagePublisher;
     private final GeometryFactory geometryFactory = new GeometryFactory(); // For creating Point objects
     
     public IssueResponse createIssue(CreateIssueRequest request) {
@@ -47,7 +50,10 @@ public class IssueService {
             .build();
         
         Issue saved = issueRepository.save(issue);
-        
+
+        // Publish event for async validation
+        messagePublisher.publishNewIssue(saved.getId());
+
         // Convert Entity to DTO
         return toResponse(saved);
     }
